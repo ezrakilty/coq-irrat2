@@ -8,18 +8,19 @@ Definition irrat x :=
 
 (** The heart of the proof will reason about how many "rightmost
     zeros" are in the binary representation of various numbers.
-    Luckily the representation of integers (via the [positive] type)
-    is already based on binary. *)
+    Luckily the representation of [positive] integers is already
+    based on binary. *)
 Fixpoint RightmostZeros (x:positive) : nat :=
   match x with
-    | 1%positive => 0
-    | (x'~0)%positive => S (RightmostZeros x')
-    | (x'~1)%positive => 0
+    | 1%positive => 0   (** The number 1 has zero rightmost zeros. *)
+    (** Bits ending in 0 (an even number) have one more than the butlast bits. *)
+    | (bits~0)%positive => S (RightmostZeros bits)
+    | (x'~1)%positive => 0  (** Bits ending in 1 have no rightmost zeros. *)
   end.
 
 (** Doubling a [positive] number gives you one additional rightmost zero. *)
 Lemma rmz_mult_2 : forall x, RightmostZeros (2*x) = S (RightmostZeros x).
- induction x; simpl; auto.
+ auto.
 Qed.
 
 (** [NPeano] defines the [even] function. *)
@@ -28,17 +29,13 @@ Require Coq.Numbers.Natural.Peano.NPeano.
 (** A square [positive] number has an [even] number of rightmost zeros. *)
 Lemma rmz_sqr : forall x, NPeano.even (RightmostZeros (x*x)) = true.
  induction x.
-   simpl; auto.
+ (* x~1 * x~1 *)
+   auto.
+ (* x~0 * x~0 *)
   simpl.
-  replace (x~0)%positive with (2*x)%positive by auto.
-  replace (x * (2 * x))%positive with (2 * (x * x))%positive.
-  rewrite rmz_mult_2.
-  replace (RightmostZeros (x*x) + 1) with (S (RightmostZeros (x*x))) by omega.
-  auto.
-  rewrite Pos.mul_assoc.
   rewrite Pos.mul_comm.
   auto.
- simpl.
+ (* 1 * 1 *)
  auto.
 Qed.
 
@@ -50,14 +47,14 @@ Fixpoint RightmostZerosZ (x:Z) : nat :=
     | Zneg x => RightmostZeros x
   end.
 
-(** Lifted rmz_mult_2. *)
-Lemma rmzz_mult_2 : forall (x:Z),
+(** Lifted rmz_mult_2 (for nonzero integers). *)
+Lemma rmzZ_mult_2 : forall (x:Z),
   (x <> 0)%Z -> RightmostZerosZ (2*x) = S (RightmostZerosZ x).
  destruct x;  (intuition || apply rmz_mult_2).
 Qed.
 
 (** Lifted rmz_sqr. *)
-Lemma rmzz_sqr : forall x, NPeano.even (RightmostZerosZ (x*x)) = true.
+Lemma rmzZ_sqr : forall x, NPeano.even (RightmostZerosZ (x*x)) = true.
  destruct x; (auto || apply rmz_sqr).
 Qed.
 
@@ -74,62 +71,101 @@ Proof.
  auto.
 Qed.
 
+Lemma sqrt_mul_sqrt_eq_n :
+  forall x, (0 <= x)%R -> (sqrt x * sqrt x)%R = x%R.
+Proof.
+ intros.
+ apply sqrt_def; auto.
+Qed.
+
 (** The square root of two is irrational. *)
 Theorem rad2_irrat : irrat (sqrt 2%R)%R.
 Proof.
  simpl.
  unfold irrat.
- intros [a [b [H_b_gt_0 H_a_over_b_eq_rad2]]].
+ (* The goal is now:
+    ~exists a b : X, b > 0 /\ IZR a / IZR b = sqrt 2) *)
+
+ (* Prove the negation by contraction; call that contrary hypothesis H *)
+ intro H.
+
+ (* H asserts the existence of numbers a and b governed by some assertions;
+    name the numbers and assertions. *)
+ destruct H as [a [b [H_b_gt_0 H_a_over_b_eq_rad2]]].
+
  assert (H_main : (a*a = 2 * b * b)%Z).
+  (* Proof of the above claim. *)
+
   assert (H_a_eq_rad2_mult_b : (IZR a = sqrt 2 * IZR b)%R).
+   (* Proof of the above claim. *)
+
+   (* Now we do some equational substitutions. *)
    rewrite <- H_a_over_b_eq_rad2.
-   replace (IZR a / IZR b)%R with (IZR a * / IZR b)%R by auto.
+
+   (* Note, "/ IZR b" is the reciporocal of b. *)
+   replace (IZR a / IZR b)%R with (IZR a * (/ IZR b))%R by auto.
    rewrite Rmult_assoc.
+   (* Cancel b with "/b". *)
    rewrite Rinv_l.
+    (* The goal is now trivial with the "real" lemmas. *)
     auto with real.
-   assert (IZR b > 0)%R.
-    apply Rlt_gt.
-    replace 0%R with (IZR 0) by solve [auto].
-    apply IZR_lt.
-    auto with zarith.
-   auto with real.
+   (* The cancellation gave rise to an obligation that b <> 0. *)
+   (* We already know it's >0 in Z, so we only have to lift that to R. *)
+   cut (IZR b > 0)%R.
+   auto with real. (* The above would be sufficient, by "real" lemmas. *)
+   (* Now proving the "cut" claim. *)
+   Hint Resolve Rlt_gt : real.
+   Hint Resolve IZR_lt : zarith.
+   replace 0%R with (IZR 0) by solve [auto].
+   auto with real zarith.
+
+  (* Back to proving a * a = 2 * b * b. *)
   assert (H0 : (IZR a * IZR a = (sqrt 2 * IZR b) * (sqrt 2 * IZR b))%R).
    congruence.
+
   replace (sqrt 2 * IZR b * (sqrt 2 * IZR b))%R
      with ((sqrt 2 * sqrt 2) * IZR b * IZR b)%R in H0.
-   replace (sqrt 2 * sqrt 2)%R with 2%R in H0.
-    rewrite <- mult_IZR in H0.
-    replace 2%R with (IZR 2) in H0 by auto.
-    rewrite <- mult_IZR in H0.
-    rewrite <- mult_IZR in H0.
-    apply eq_IZR in H0.
-    trivial.
-   symmetry; apply sqrt_def.
-   auto with real.
+   rewrite sqrt_mul_sqrt_eq_n in H0 by (auto with real).
+   rewrite <- mult_IZR in H0.
+   replace 2%R with (IZR 2) in H0 by auto.
+   rewrite <- mult_IZR in H0.
+   rewrite <- mult_IZR in H0.
+   apply eq_IZR in H0.
+   trivial.
+
+  (* Proving the above substitution: (sqrt 2 * b * (sqrt 2 * b))
+                                      = ((sqrt 2 * sqrt 2) * b * b *)
   rewrite Rmult_comm.
   rewrite Rmult_assoc.
   rewrite <- Rmult_assoc.
   replace (IZR b * sqrt 2)%R with (sqrt 2 * IZR b)%R.
    auto.
   apply Rmult_comm.
+
+
  (** (Now we've reduced it to a problem in Z. And now comes the
-    interesting part of the proof.) *)
- assert (H_a_rmzz_even : NPeano.even (RightmostZerosZ (a*a)) = true).
-  apply rmzz_sqr.
- assert (H_b_rmzz_even : NPeano.even (RightmostZerosZ (b*b)) = true).
-  apply rmzz_sqr.
- assert (H_a_rmzz_eq_S_b_rmzz : (RightmostZerosZ (a*a)) = S (RightmostZerosZ (b*b))).
-  rewrite <- rmzz_mult_2.
+     interesting part of the proof.) The next three assertions will
+     given us some equations on the number of zeros in a*a and b*b
+     that can't all be satisfied. *)
+ assert (H_a_rmzZ_even : NPeano.even (RightmostZerosZ (a*a)) = true).
+  apply rmzZ_sqr.
+ assert (H_b_rmzZ_even : NPeano.even (RightmostZerosZ (b*b)) = true).
+  apply rmzZ_sqr.
+ assert (H_a_rmzZ_eq_S_b_rmzZ : (RightmostZerosZ (a*a)) = S (RightmostZerosZ (b*b))).
+  rewrite <- rmzZ_mult_2.
    rewrite H_main.
    rewrite Z.mul_assoc.
    trivial.
-  assert (b*b > 0)%Z.
-   auto with zarith.
+  (* Using rmzZ_mult_2 gave us an obligation that b*b <> 0 *)
+  assert (b*b > 0)%Z by (auto with zarith).
   auto with zarith.
- rewrite H_a_rmzz_eq_S_b_rmzz in H_a_rmzz_even.
- rewrite even_odd in H_b_rmzz_even.
- rewrite H_a_rmzz_even in H_b_rmzz_even.
- simpl in H_b_rmzz_even.
+
+ (* Now we have those three equations and we can derive a contradiction. *)
+ rewrite H_a_rmzZ_eq_S_b_rmzZ in H_a_rmzZ_even.
+ rewrite even_odd in H_b_rmzZ_even.
+ rewrite H_a_rmzZ_even in H_b_rmzZ_even.
+ simpl in H_b_rmzZ_even.
+ (* We have derived a bogus equation, false = true. Coq knows what to do from
+    here. *)
  discriminate.
 Qed.
-
