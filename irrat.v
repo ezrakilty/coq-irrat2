@@ -94,54 +94,39 @@ Proof.
  destruct H as [a [b [H_b_gt_0 H_a_over_b_eq_rad2]]].
 
  assert (H_main : (a*a = 2 * b * b)%Z).
-  (* Proof of the above claim. *)
+  (* Proof of H_main. *)
 
+  (* In H_a_over_b_eq_rad2, we'd like to move the IZR b to the rhs. *)
   assert (H_a_eq_rad2_mult_b : (IZR a = sqrt 2 * IZR b)%R).
-   (* Proof of the above claim. *)
+   (* Proof of H_a_eq_rad2_mult_b. *)
+
+   (* Lift our fact that b > 0 to reals *)
+   assert (IZR b > 0)%R.
+    replace 0%R with (IZR 0) by solve [auto].
+    Hint Resolve Rlt_gt : real.
+    Hint Resolve IZR_lt : zarith.
+    auto with real zarith.
 
    (* Now we do some equational substitutions. *)
    rewrite <- H_a_over_b_eq_rad2.
+   field.
+   Hint Resolve Rgt_not_eq : real.
+   auto with real.
 
-   (* Note, "/ IZR b" is the reciporocal of b. *)
-   replace (IZR a / IZR b)%R with (IZR a * (/ IZR b))%R by auto.
-   rewrite Rmult_assoc.
-   (* Cancel b with "/b". *)
-   rewrite Rinv_l.
-    (* The goal is now trivial with the "real" lemmas. *)
-    auto with real.
-   (* The cancellation gave rise to an obligation that b <> 0. *)
-   (* We already know it's >0 in Z, so we only have to lift that to R. *)
-   cut (IZR b > 0)%R.
-   auto with real. (* The above would be sufficient, by "real" lemmas. *)
-   (* Now proving the "cut" claim. *)
-   Hint Resolve Rlt_gt : real.
-   Hint Resolve IZR_lt : zarith.
-   replace 0%R with (IZR 0) by solve [auto].
-   auto with real zarith.
-
-  (* Back to proving a * a = 2 * b * b. *)
+  (* Back to proving H_main: a * a = 2 * b * b. *)
   assert (H0 : (IZR a * IZR a = (sqrt 2 * IZR b) * (sqrt 2 * IZR b))%R).
    congruence.
 
   replace (sqrt 2 * IZR b * (sqrt 2 * IZR b))%R
-     with ((sqrt 2 * sqrt 2) * IZR b * IZR b)%R in H0.
-   rewrite sqrt_mul_sqrt_eq_n in H0 by (auto with real).
-   rewrite <- mult_IZR in H0.
-   replace 2%R with (IZR 2) in H0 by auto.
-   rewrite <- mult_IZR in H0.
-   rewrite <- mult_IZR in H0.
-   apply eq_IZR in H0.
-   trivial.
+     with ((sqrt 2 * sqrt 2) * IZR b * IZR b)%R in H0
+     (* This substitution is shown by assoc/comm normalizing, tactic "ring" *)
+     by ring.
+  rewrite sqrt_mul_sqrt_eq_n in H0 by (auto with real).
+  replace 2%R with (IZR 2) in H0 by auto.
+  repeat (rewrite <- mult_IZR in H0).
+  apply eq_IZR; trivial.
 
-  (* Proving the above substitution: (sqrt 2 * b * (sqrt 2 * b))
-                                      = ((sqrt 2 * sqrt 2) * b * b *)
-  rewrite Rmult_comm.
-  rewrite Rmult_assoc.
-  rewrite <- Rmult_assoc.
-  replace (IZR b * sqrt 2)%R with (sqrt 2 * IZR b)%R.
-   auto.
-  apply Rmult_comm.
-
+ clear H_a_over_b_eq_rad2.
 
  (** (Now we've reduced it to a problem in Z. And now comes the
      interesting part of the proof.) The next three assertions will
