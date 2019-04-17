@@ -1,5 +1,5 @@
 body { padding: 0px 0px;
-       margin: 0px 0px; 
+       margin: 0px 0px;
        background-color: white }
 
 #page { display: block;
@@ -15,7 +15,7 @@ body { padding: 0px 0px;
           border-bottom-style: solid;
           border-width: thin }
 
-#header h1 { padding: 0; 
+#header h1 { padding: 0;
              margin: 0;}
 
 
@@ -23,9 +23,9 @@ body { padding: 0px 0px;
 
 #main{ display: block;
        padding: 10px;
-       font-family: sans-serif;
+       font-family: georgia;
        font-size: 100%;
-       line-height: 100% }
+       line-height: 115% }
 
 #main  h1 { line-height: 95% } /* allow for multi-line headers */
 
@@ -42,92 +42,94 @@ body { padding: 0px 0px;
 #main .keyword { color : #cf1d1d }
 #main { color: black }
 
-.section { background-color: rgb(60%,60%,100%);
-           padding-top: 13px; 
-           padding-bottom: 13px; 
-           padding-left: 3px; 
+.section { background-color: white;
+           padding-top: 13px;
+           padding-bottom: 13px;
+           padding-left: 3px;
            margin-top: 5px;
            margin-bottom: 5px;
            font-size : 175% }
 
-h2.section { background-color: rgb(80%,80%,100%);
-             padding-left: 3px; 
-             padding-top: 12px; 
-             padding-bottom: 10px; 
+h2.section {
+             padding-left: 3px;
+             padding-top: 12px;
+             padding-bottom: 10px;
              font-size : 130% }
 
-h3.section { background-color: rgb(90%,90%,100%);
-             padding-left: 3px; 
-             padding-top: 7px; 
-             padding-bottom: 7px; 
+h3.section {
+             padding-left: 3px;
+             padding-top: 7px;
+             padding-bottom: 7px;
              font-size : 115% }
 
-h4.section { 
+h4.section {
 /*
                    background-color: rgb(80%,80%,80%);
                    max-width: 20em;
-                   padding-left: 5px; 
-                   padding-top: 5px; 
-                   padding-bottom: 5px; 
+                   padding-left: 5px;
+                   padding-top: 5px;
+                   padding-bottom: 5px;
 */
                    background-color: white;
-                   padding-left: 0px; 
-                   padding-top: 0px; 
-                   padding-bottom: 0px; 
+                   padding-left: 0px;
+                   padding-top: 0px;
+                   padding-bottom: 0px;
                    font-size : 100%;
-                   font-style : bold;
+                   font-weight : bold;
                    text-decoration : underline;
  }
 
-#main .doc { margin: 0px;
-             font-family: sans-serif;
+#main .doc { margin: 10px 0 10px 0;
+             font-family: georgia;
              font-size: 100%;
 	     line-height: 125%;
              max-width: 40em;
              color: black;
 	     padding: 10px;
-             background-color: #90bdff;
-             border-style: plain}
+             background-color: white; }
 
-.inlinecode { 
+.inlinecode {
     display: inline;
 /*    font-size: 125%; */
     color: #666666;
-    font-family: monospace } 
+    font-family: monospace }
 
-.doc .inlinecode { 
+.doc .inlinecode {
     display: inline;
-    font-size: 120%; 
+    font-size: 120%;
     color: rgb(30%,30%,70%);
-    font-family: monospace } 
+    font-family: monospace }
 
-.doc .inlinecode .id { 
-    color: rgb(30%,30%,70%); 
-} 
+.doc .inlinecode .id {
+    color: rgb(30%,30%,70%);
+}
 
-.inlinecodenm { 
+.inlinecodenm {
     display: inline;
     color: #444444;
 }
 
-.doc .code { 
+.doc .code {
     display: inline;
-    font-size: 120%; 
-    color: rgb(30%,30%,70%); 
-    font-family: monospace } 
+    font-size: 120%;
+    color: rgb(30%,30%,70%);
+    font-family: monospace }
 
-.comment { 
+.comment {
     display: inline;
     font-family: monospace;
-    color: rgb(50%,50%,80%); 
-} 
+    color: rgb(50%,50%,80%);
+}
 
-.code { 
+.code {
     display: block;
-/*  padding-left: 15px; */
-    font-size: 110%; 
+    font-size: 110%;
     font-family: monospace;
- } 
+    background-color: #EEE;
+    padding: 15px 0px 15px 15px;
+    width: 50em;
+/*    margin-left: 15px;*/
+}
 
 table.infrule {
   border: 0px;
@@ -149,7 +151,7 @@ tr.infrulemiddle hr {
 }
 
 .infrulenamecol {
-    color: rgb(60%,60%,60%); 
+    color: rgb(60%,60%,60%);
     font-size: 80%;
     padding-left: 1em;
     padding-bottom: 0.1em
@@ -158,59 +160,116 @@ tr.infrulemiddle hr {
 /* Pied de page */
 
 #footer { font-size: 65%;
-          font-family: sans-serif; }
+          font-family: georgia; }
+
+/* Identifiers: <span class="id" title="...">) */
 
 .id { display: inline; }
 
-.id[type="constructor"] { 
+.id[title="constructor"] {
     color: rgb(60%,0%,0%);
 }
 
-.id[type="var"] { 
+.id[title="var"] {
     color: rgb(40%,0%,40%);
 }
 
-.id[type="variable"] { 
+.id[title="variable"] {
     color: rgb(40%,0%,40%);
 }
 
-.id[type="definition"] { 
+.id[title="definition"] {
     color: rgb(0%,40%,0%);
 }
 
-.id[type="abbreviation"] { 
+.id[title="abbreviation"] {
     color: rgb(0%,40%,0%);
 }
 
-.id[type="lemma"] { 
+.id[title="lemma"] {
     color: rgb(0%,40%,0%);
 }
 
-.id[type="instance"] { 
+.id[title="instance"] {
     color: rgb(0%,40%,0%);
 }
 
-.id[type="projection"] { 
+.id[title="projection"] {
     color: rgb(0%,40%,0%);
 }
 
-.id[type="method"] { 
+.id[title="method"] {
     color: rgb(0%,40%,0%);
 }
 
-.id[type="inductive"] { 
+.id[title="inductive"] {
     color: rgb(0%,0%,80%);
 }
 
-.id[type="record"] { 
+.id[title="record"] {
     color: rgb(0%,0%,80%);
 }
 
-.id[type="class"] { 
+.id[title="class"] {
     color: rgb(0%,0%,80%);
 }
 
-.id[type="keyword"] { 
+.id[title="keyword"] {
+ color : #cf1d1d;
+/*     color: black; */
+}
+
+/* Deprecated rules using the 'type' attribute of <span> (not xhtml valid) */
+
+.id[type="constructor"] {
+    color: rgb(60%,0%,0%);
+}
+
+.id[type="var"] {
+    color: rgb(40%,0%,40%);
+}
+
+.id[type="variable"] {
+    color: rgb(40%,0%,40%);
+}
+
+.id[type="definition"] {
+    color: rgb(0%,40%,0%);
+}
+
+.id[type="abbreviation"] {
+    color: rgb(0%,40%,0%);
+}
+
+.id[type="lemma"] {
+    color: rgb(0%,40%,0%);
+}
+
+.id[type="instance"] {
+    color: rgb(0%,40%,0%);
+}
+
+.id[type="projection"] {
+    color: rgb(0%,40%,0%);
+}
+
+.id[type="method"] {
+    color: rgb(0%,40%,0%);
+}
+
+.id[type="inductive"] {
+    color: rgb(0%,0%,80%);
+}
+
+.id[type="record"] {
+    color: rgb(0%,0%,80%);
+}
+
+.id[type="class"] {
+    color: rgb(0%,0%,80%);
+}
+
+.id[type="keyword"] {
  color : #cf1d1d;
 /*     color: black; */
 }
@@ -261,7 +320,6 @@ tr.infrulemiddle hr {
 #index #footer {
     position: absolute;
     bottom: 0;
-    text-align: bottom;
 }
 
 .paragraph {
