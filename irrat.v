@@ -28,6 +28,7 @@ Fixpoint RightmostZeros (x:positive) : nat :=
 
 (** Doubling a [positive] number gives you one additional rightmost zero. *)
 Lemma rmz_mult_2 : forall x, RightmostZeros (2*x) = S (RightmostZeros x).
+Proof.
  auto.
 Qed.
 
@@ -36,6 +37,7 @@ Require Coq.Numbers.Natural.Peano.NPeano.
 
 (** A square [positive] number has an [even] number of rightmost zeros. *)
 Lemma rmz_sqr : forall x, NPeano.even (RightmostZeros (x*x)) = true.
+Proof.
  induction x.
  (* x~1 * x~1 *)
    auto.
@@ -59,11 +61,13 @@ Fixpoint RightmostZerosZ (x:Z) : nat :=
     you one more rightmost zero. *)
 Lemma rmzZ_mult_2 : forall (x:Z),
   (x <> 0)%Z -> RightmostZerosZ (2*x) = S (RightmostZerosZ x).
+Proof.
  destruct x;  (intuition || apply rmz_mult_2).
 Qed.
 
 (** The statement that squares have an even number of rightmost zeros is now lifted to [Z]. *)
 Lemma rmzZ_sqr : forall x, NPeano.even (RightmostZerosZ (x*x)) = true.
+Proof.
  destruct x; (auto || apply rmz_sqr).
 Qed.
 
